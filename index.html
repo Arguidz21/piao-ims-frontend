@@ -18,7 +18,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <style>
-    /* ====== FULL CSS (copy from your original or use the one below) ====== */
+    /* ====== FULL CSS ====== */
     :root{
       --sidebar-bg:#1e1e2f;
       --sidebar-bg-darker:#171826;
@@ -297,7 +297,7 @@
   </style>
 </head>
 <body>
-  <!-- ====== SAME HTML STRUCTURE (all modals, sidebar, main) ====== -->
+  <!-- ====== HTML STRUCTURE ====== -->
   <!-- Sidebar -->
   <aside class="sidebar mobile-hidden" id="sidebar" aria-label="Sidebar">
     <div class="brand">
@@ -537,8 +537,8 @@
     /***********************
      * CONFIGURATION
      ***********************/
-    // ★★★ REPLACE WITH YOUR ACTUAL APPS SCRIPT WEB APP URL ★★★
-    const APP_SCRIPT_BASE = 'https://script.google.com/macros/s/AKfycbxJ9SG3QgJqToLtTGl7lNrYElll6ByiW0HtJJMeAVqe-I0O3EmDUQnf5AoYHPRNrknL/exec';
+    // ★★★ REPLACE THIS WITH YOUR ACTUAL APPS SCRIPT WEB APP URL ★★★
+    const APP_SCRIPT_BASE = 'YOUR_APPS_SCRIPT_URL';  // e.g. 'https://script.google.com/macros/s/AKfy.../exec'
 
     const HOMEPAGE_URL = 'https://script.google.com/macros/s/AKfycbyYWgLv9CTXDrSfhp_g6m5IlxqjJfl-qEL0EoABhxKe18ea-Y3ogttvEXdM8bv2x-wEGA/exec';
     const HOMEPAGE_TITLE = 'Homepage';
@@ -629,16 +629,21 @@
       const INACTIVITY_LIMIT = 10 * 60 * 1000;
 
       /***********************
-       * Helper: API calls
+       * Helper: API calls (using form-urlencoded to avoid CORS preflight)
        ***********************/
       async function apiCall(action, method = 'POST', data = null) {
         const url = APP_SCRIPT_BASE + '?action=' + encodeURIComponent(action);
         const options = {
           method: method,
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         };
         if (method === 'POST' && data) {
-          options.body = JSON.stringify(data);
+          const params = new URLSearchParams();
+          for (const [key, value] of Object.entries(data)) {
+            // If value is an object, stringify it (but we don't send complex objects now)
+            params.append(key, value);
+          }
+          options.body = params.toString();
         }
         const response = await fetch(url, options);
         if (!response.ok) {
