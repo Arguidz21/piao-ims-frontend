@@ -1,0 +1,1491 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="utf-8">
+  <title>PIAO Internal Monitoring System</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="https://arguidz21.github.io/dashboard-assets/PIAO_NEW_LOGO-removebg-preview_0.png?v=2">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://arguidz21.github.io/dashboard-assets/PIAO_NEW_LOGO-removebg-preview_0.png?v=2">
+  <link rel="shortcut icon" href="https://arguidz21.github.io/dashboard-assets/PIAO_NEW_LOGO-removebg-preview_0.png?v=2">
+  <link rel="apple-touch-icon" href="https://arguidz21.github.io/dashboard-assets/PIAO_NEW_LOGO-removebg-preview_0.png?v=2">
+  <meta name="theme-color" content="#ffffff">
+
+  <!-- Fonts & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    /* ... (copy your exact CSS from your original file) ... */
+    /* I'll omit the full CSS for brevity; it's the same as your original */
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar mobile-hidden" id="sidebar" aria-label="Sidebar">
+    <div class="brand">
+      <i class="fa-solid fa-chart-line"></i>
+      <div class="brand-text">
+        <span>PIAO-IMS</span>
+        <div class="brand-desc">Internal Monitoring System</div>
+      </div>
+    </div>
+    <button class="toggle" id="toggle" aria-label="Collapse sidebar"><i class="fa-solid fa-angles-left"></i></button>
+    <ul class="nav" id="nav" aria-label="Application navigation"></ul>
+    <div class="sidebar-footer">
+      <div class="footer-text">© 2025 All Rights Reserved.</div>
+    </div>
+  </aside>
+  <div class="scrim" id="scrim"></div>
+
+  <!-- Main -->
+  <main class="main">
+    <header class="topbar">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <button class="menu-btn" id="menuBtn" aria-label="Open menu"><i class="fa-solid fa-bars"></i></button>
+        <div class="title" id="pageTitle">Welcome</div>
+      </div>
+      <div class="right">
+        <span class="pill" id="statusPill">Ready</span>
+        <button id="loginBtn" class="login-btn" title="Sign in">Sign in</button>
+        <div id="userContainer" class="user-wrapper-inline" style="display:none; position:relative;">
+          <div id="userWrapper" style="display:flex; align-items:center; gap:8px;">
+            <div id="userPill" class="user-pill" aria-haspopup="true" aria-expanded="false" style="cursor:pointer;">
+              <i class="fa-solid fa-user"></i><span id="userNameShort"></span>
+            </div>
+          </div>
+          <button id="logoutIcon" class="signout-inline" title="Sign out" aria-label="Sign out" style="display:none;">
+            <i class="fa-solid fa-right-from-bracket"></i>
+          </button>
+          <div id="userMenu" class="user-menu" role="menu">
+            <div style="padding:6px 8px; font-weight:600;" id="userFullName"></div>
+            <div id="userAttributes" style="padding:0 8px; font-size:12px; color:#666; border-bottom:1px solid #eee; padding-bottom:6px;"></div>
+            <div style="padding-top:6px;">
+              <button id="logoutBtn" class="btn ghost" style="width:100%;">Sign out</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <section class="stage">
+      <div class="loader" id="loader" aria-live="polite">
+        <div class="box">
+          <i class="fa-solid fa-spinner spin"></i> Loading app…
+        </div>
+      </div>
+      <iframe id="frame" title="Embedded app"></iframe>
+    </section>
+  </main>
+
+  <!-- Login modal -->
+  <div class="modal-backdrop" id="loginModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+    <div class="modal" id="loginCard" role="document">
+      <div class="auth-grid">
+        <div class="auth-visual">
+          <img id="orgSideImage" class="illustration" src="https://arguidz21.github.io/dashboard-assets/PIAO_7.jpg" alt="Left illustration">
+        </div>
+
+        <div class="auth-form">
+          <button class="auth-close" id="loginX" aria-label="Close login"><i class="fa-solid fa-xmark"></i></button>
+
+          <div class="org-texts">
+            <div class="org-h1">Provincial Government of Davao de Oro</div>
+            <div class="org-h2">Provincial Internal Audit Office</div>
+          </div>
+
+          <div class="org-title">Internal Monitoring System (PIAO-IMS)</div>
+          <div class="divider"></div>
+
+          <!-- LOGIN MODE -->
+          <div id="loginModeContainer">
+            <div class="input-stack">
+              <div class="input-group">
+                <i class="fa-solid fa-id-badge"></i>
+                <input id="loginUser" type="text" placeholder="Type your USERID" autocomplete="username" aria-label="USERID" name="username">
+              </div>
+
+              <div class="input-group password-row">
+                <i class="fa-solid fa-lock"></i>
+                <input id="loginPass" type="password" placeholder="Type your password" autocomplete="current-password" aria-label="Password" name="password">
+                <button class="toggle-pass" id="togglePass" aria-label="Toggle password"><i class="fa-solid fa-eye"></i></button>
+              </div>
+
+              <div class="remember-row">
+                <input type="checkbox" id="rememberMeCheckbox">
+                <label for="rememberMeCheckbox">Remember me (stay signed in for 30 days)</label>
+              </div>
+
+              <div style="min-height:18px;">
+                <div id="loginError" style="color:#ef4444; font-size:13px;"></div>
+              </div>
+            </div>
+
+            <div class="login-actions">
+              <button class="btn ghost" id="loginCancel">Cancel</button>
+              <button class="btn primary" id="loginSubmit">LOGIN</button>
+            </div>
+
+            <div class="helper">
+              <a href="#" id="forgotPasswordLink">Forgot password?</a>
+            </div>
+          </div>
+
+          <!-- RECOVERY MODE -->
+          <div id="recoveryModeContainer" style="display:none;">
+            <div id="recoveryStep1">
+              <div class="input-stack">
+                <div class="input-group">
+                  <i class="fa-solid fa-id-badge"></i>
+                  <input id="recoveryUserId" type="text" placeholder="Enter your USERID" autocomplete="off" aria-label="USERID">
+                </div>
+                <div class="helper" style="margin-top:-8px; text-align:left;">
+                  <i class="fa-solid fa-info-circle"></i> Hint: Your User ID format is PIAO-XXXXX (e.g., PIAO-CATS)
+                </div>
+                <div style="min-height:18px;">
+                  <div id="recoveryStep1Error" style="color:#ef4444; font-size:13px;"></div>
+                </div>
+              </div>
+              <div class="login-actions">
+                <button class="btn ghost" id="recoveryBackToLogin">Back</button>
+                <button class="btn primary" id="recoveryConfirmUserId">Verify User ID</button>
+              </div>
+            </div>
+
+            <div id="recoveryStep2" style="display:none;">
+              <div class="recovery-info">
+                <i class="fa-solid fa-envelope"></i> A recovery code will be sent to:<br>
+                <strong id="maskedEmailDisplay"></strong>
+              </div>
+              <div class="login-actions" style="flex-direction:column; gap:12px;">
+                <button class="btn primary" id="recoverySendCode">Send Recovery Code</button>
+                <button class="btn ghost" id="recoveryCancelStep2">Cancel</button>
+              </div>
+              <div style="min-height:18px; margin-top:8px;">
+                <div id="recoveryStep2Error" style="color:#ef4444; font-size:13px;"></div>
+                <div id="recoveryStep2Success" style="color:#16a34a; font-size:13px;"></div>
+              </div>
+            </div>
+
+            <div id="recoveryStep3" style="display:none;">
+              <div class="input-stack">
+                <div class="input-group">
+                  <i class="fa-solid fa-key"></i>
+                  <input id="recoveryCode" type="text" placeholder="Enter 6-digit verification code" autocomplete="off" maxlength="6">
+                </div>
+                <div style="min-height:18px;">
+                  <div id="recoveryStep3Error" style="color:#ef4444; font-size:13px;"></div>
+                  <div id="recoveryStep3Success" style="color:#16a34a; font-size:13px;"></div>
+                </div>
+              </div>
+              <div class="login-actions">
+                <button class="btn ghost" id="recoveryCancelStep3">Cancel</button>
+                <button class="btn primary" id="recoveryVerifyCode">Verify & Reset Password</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Change password modal -->
+  <div class="modal-backdrop" id="changePassModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="changePassTitle" style="z-index:70;">
+    <div class="modal" id="changePassCard" role="document" aria-describedby="changePassDesc">
+      <div class="modal-header" style="padding:18px 18px 0">
+        <div class="modal-brand"><i class="fa-solid fa-key"></i></div>
+        <div>
+          <h3 id="changePassTitle">Change Temporary Password</h3>
+          <p class="sub" id="changePassDesc">You must change your temporary password before continuing.</p>
+        </div>
+      </div>
+
+      <div style="padding:0 18px 6px; font-size:13px; color:#475569;">
+        <div>NAME: <strong id="chgUserFullName"></strong></div>
+        <div style="margin-top:6px; font-size:13px;">USERID: <strong id="chgUserLabel"></strong></div>
+        <div id="chgUserAttributes" style="margin-top:6px; font-size:13px;"></div>
+      </div>
+
+      <div style="padding:0 18px 18px;">
+        <div class="input-group password-row" style="margin-top:10px;">
+          <i class="fa-solid fa-lock-open"></i>
+          <input id="newPass" type="password" placeholder="New password (min 8 characters)" aria-label="New password" autocomplete="new-password">
+          <button class="toggle-pass" id="toggleNewPass" aria-label="Toggle new password"><i class="fa-solid fa-eye"></i></button>
+        </div>
+
+        <div class="input-group password-row" style="margin-top:10px;">
+          <i class="fa-solid fa-lock"></i>
+          <input id="confirmPass" type="password" placeholder="Confirm new password" aria-label="Confirm new password" autocomplete="new-password">
+          <button class="toggle-pass" id="toggleConfirmPass" aria-label="Toggle confirm password"><i class="fa-solid fa-eye"></i></button>
+        </div>
+
+        <div style="min-height:18px; margin-top:8px;">
+          <div id="changePassError" style="color:#ef4444; font-size:13px;"></div>
+        </div>
+
+        <div class="login-actions" style="justify-content:space-between;">
+          <div class="small-muted">Your new password will be saved securely (SHA-256 hashed).</div>
+          <div>
+            <button class="btn ghost" id="changePassCancel">Cancel</button>
+            <button class="btn primary" id="changePassSubmit">Save & Continue</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Disclaimer Modal -->
+  <div class="modal-backdrop" id="disclaimerModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="disclaimerTitle" style="z-index:80;">
+    <div class="modal" id="disclaimerCard" role="document" style="max-width: 560px;">
+      <div class="modal-header" style="padding:20px 20px 0;">
+        <div class="modal-brand"><i class="fa-solid fa-scale-balanced"></i></div>
+        <div>
+          <h3 id="disclaimerTitle">Disclaimer</h3>
+          <p class="sub">Please read carefully before proceeding</p>
+        </div>
+      </div>
+      <div style="padding:0 20px 10px;">
+        <div id="disclaimerText" style="font-size:14px; line-height:1.5; color:#1f2937; max-height: 50vh; overflow-y: auto;">
+          © 2025 Arnaldo II S. Guides. All Rights Reserved.<br><br>
+          This web application is an unofficial foundation version created personally by a staff member of the Provincial Internal Audit Office – Davao de Oro for development purposes. It is not a final official product of the Provincial Government of Davao de Oro. This application has not been reviewed, approved, or endorsed by the Provincial Information and Communications Technology Office (PICTO) or any other government entity. For the official web application, please refer to the Provincial Government of Davao de Oro through PICTO.
+        </div>
+      </div>
+      <div class="login-actions" style="padding:8px 20px 20px; justify-content: flex-end;">
+        <button class="btn primary" id="acknowledgeBtn">Acknowledge</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /***********************
+     * CONFIGURATION - POINT TO YOUR APPS SCRIPT DEPLOYMENT
+     ***********************/
+    const API_BASE = 'https://script.google.com/macros/s/AKfycbx5zFA7iluTPDabwV02ihj2XB5rAaew0P-pqbVKq7SE0YW9g2gtB3oWLJ0IPe8uhOUDYg/exec';
+    const HOMEPAGE_URL = 'https://script.google.com/macros/s/AKfycbyYWgLv9CTXDrSfhp_g6m5IlxqjJfl-qEL0EoABhxKe18ea-Y3ogttvEXdM8bv2x-wEGA/exec';
+    const HOMEPAGE_TITLE = 'Homepage';
+
+    /***********************
+     * API HELPER (uses URL-encoded POST to avoid CORS preflight)
+     ***********************/
+    async function callApi(action, payload = {}) {
+      const formData = new URLSearchParams();
+      formData.append('action', action);
+      for (let key in payload) {
+        // If payload value is an object, stringify it
+        const value = (typeof payload[key] === 'object') ? JSON.stringify(payload[key]) : payload[key];
+        formData.append(key, value);
+      }
+      const response = await fetch(API_BASE, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: formData
+      });
+      if (!response.ok) throw new Error('Network error: ' + response.status);
+      return response.json();
+    }
+
+    /***********************
+     * Dynamic mobile viewport fix
+     ***********************/
+    (function setVh(){
+      const apply = () => {
+        const vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty('--vh', vh + 'px');
+      };
+      apply();
+      window.addEventListener('resize', apply);
+      window.addEventListener('orientationchange', apply);
+    })();
+
+    /***********************
+     * Elements
+     ***********************/
+    const sidebar = document.getElementById('sidebar');
+    const toggle  = document.getElementById('toggle');
+    const nav     = document.getElementById('nav');
+    const frame   = document.getElementById('frame');
+    const loader  = document.getElementById('loader');
+    const titleEl = document.getElementById('pageTitle');
+    const pill    = document.getElementById('statusPill');
+    const scrim   = document.getElementById('scrim');
+    const menuBtn = document.getElementById('menuBtn');
+
+    // Login elements
+    const loginBtn = document.getElementById('loginBtn');
+    const loginModal = document.getElementById('loginModal');
+    const loginCard = document.getElementById('loginCard');
+    const loginSubmit = document.getElementById('loginSubmit');
+    const loginCancel = document.getElementById('loginCancel');
+    const loginUser = document.getElementById('loginUser');
+    const loginPass = document.getElementById('loginPass');
+    const loginError = document.getElementById('loginError');
+    const togglePass = document.getElementById('togglePass');
+    const loginX = document.getElementById('loginX');
+    const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+    const rememberMeCheckbox = document.getElementById('rememberMeCheckbox');
+
+    // Recovery mode containers
+    const loginModeContainer = document.getElementById('loginModeContainer');
+    const recoveryModeContainer = document.getElementById('recoveryModeContainer');
+    const recoveryStep1 = document.getElementById('recoveryStep1');
+    const recoveryStep2 = document.getElementById('recoveryStep2');
+    const recoveryStep3 = document.getElementById('recoveryStep3');
+    const recoveryUserId = document.getElementById('recoveryUserId');
+    const recoveryStep1Error = document.getElementById('recoveryStep1Error');
+    const recoveryBackToLogin = document.getElementById('recoveryBackToLogin');
+    const recoveryConfirmUserId = document.getElementById('recoveryConfirmUserId');
+    const maskedEmailDisplay = document.getElementById('maskedEmailDisplay');
+    const recoverySendCode = document.getElementById('recoverySendCode');
+    const recoveryCancelStep2 = document.getElementById('recoveryCancelStep2');
+    const recoveryStep2Error = document.getElementById('recoveryStep2Error');
+    const recoveryStep2Success = document.getElementById('recoveryStep2Success');
+    const recoveryCode = document.getElementById('recoveryCode');
+    const recoveryStep3Error = document.getElementById('recoveryStep3Error');
+    const recoveryStep3Success = document.getElementById('recoveryStep3Success');
+    const recoveryCancelStep3 = document.getElementById('recoveryCancelStep3');
+    const recoveryVerifyCode = document.getElementById('recoveryVerifyCode');
+
+    let recoveryState = { userId: null, fullEmail: null };
+
+    // Change password modal elements
+    const changePassModal = document.getElementById('changePassModal');
+    const changePassCard = document.getElementById('changePassCard');
+    const chgUserLabel = document.getElementById('chgUserLabel');
+    const chgUserFullName = document.getElementById('chgUserFullName');
+    const chgUserAttributes = document.getElementById('chgUserAttributes');
+    const newPass = document.getElementById('newPass');
+    const confirmPass = document.getElementById('confirmPass');
+    const changePassError = document.getElementById('changePassError');
+    const changePassSubmit = document.getElementById('changePassSubmit');
+    const changePassCancel = document.getElementById('changePassCancel');
+    const toggleNewPass = document.getElementById('toggleNewPass');
+    const toggleConfirmPass = document.getElementById('toggleConfirmPass');
+
+    // User/Signout area
+    const userContainer = document.getElementById('userContainer');
+    const userPill = document.getElementById('userPill');
+    const userMenu = document.getElementById('userMenu');
+    const userNameShort = document.getElementById('userNameShort');
+    const userFullName = document.getElementById('userFullName');
+    const userAttributes = document.getElementById('userAttributes');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const logoutIcon = document.getElementById('logoutIcon');
+
+    let pendingForceUser = null;
+    let pendingLoginPayload = null;
+    let currentApp = null;
+
+    /***********************
+     * INACTIVITY TIMER (10 minutes)
+     ***********************/
+    let inactivityTimer = null;
+    const INACTIVITY_LIMIT = 10 * 60 * 1000;
+
+    function resetInactivityTimer() {
+      if (inactivityTimer) clearTimeout(inactivityTimer);
+      inactivityTimer = setTimeout(() => {
+        console.log('Inactivity timeout: auto-logout');
+        doLogout(true);
+      }, INACTIVITY_LIMIT);
+    }
+
+    const activityEvents = ['mousemove', 'click', 'keydown', 'scroll', 'touchstart'];
+    activityEvents.forEach(event => {
+      window.addEventListener(event, resetInactivityTimer);
+    });
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) resetInactivityTimer();
+    });
+
+    window.addEventListener('message', (event) => {
+      if (frame && frame.contentWindow && event.source === frame.contentWindow) {
+        resetInactivityTimer();
+      }
+    });
+
+    function startInactivityMonitoring() { resetInactivityTimer(); }
+    function stopInactivityMonitoring() { if (inactivityTimer) { clearTimeout(inactivityTimer); inactivityTimer = null; } }
+
+    /***********************
+     * Audit Logging Helper (frontend to server)
+     ***********************/
+    function logUserAction(action, target, details) {
+      const s = getSession();
+      if (!s || !s.username) return;
+      const clientId = localStorage.getItem('clientId') || '';
+      const browserInfo = {
+        userAgent: navigator.userAgent,
+        screen: `${screen.width}x${screen.height}`,
+        language: navigator.language
+      };
+      callApi('logUserAction', {
+        userId: s.username,
+        fullName: s.fullname || s.username,
+        role: s.role || '',
+        action: action,
+        target: target || '',
+        details: details || '',
+        clientId: clientId,
+        browserInfo: JSON.stringify(browserInfo)
+      }).catch(() => {});
+    }
+
+    /***********************
+     * Persistent session (Remember Me)
+     ***********************/
+    const PERSISTENT_TOKEN_KEY = 'piao_persistent_token';
+    const PERSISTENT_USER_KEY = 'piao_persistent_user';
+
+    function storePersistentToken(token, userData) {
+      if (token && userData) {
+        localStorage.setItem(PERSISTENT_TOKEN_KEY, token);
+        localStorage.setItem(PERSISTENT_USER_KEY, JSON.stringify(userData));
+      } else {
+        localStorage.removeItem(PERSISTENT_TOKEN_KEY);
+        localStorage.removeItem(PERSISTENT_USER_KEY);
+      }
+    }
+
+    async function restorePersistentSession() {
+      const token = localStorage.getItem(PERSISTENT_TOKEN_KEY);
+      const userDataStr = localStorage.getItem(PERSISTENT_USER_KEY);
+      if (!token || !userDataStr) return false;
+
+      let userData;
+      try {
+        userData = JSON.parse(userDataStr);
+      } catch (e) {
+        return false;
+      }
+
+      try {
+        const result = await callApi('verifyToken', { token: token, clientId: '' });
+        if (result && result.valid) {
+          const session = {
+            username: userData.username,
+            role: userData.role,
+            fullname: userData.fullname,
+            loggedAt: Date.now(),
+            token: token,
+            tokenExpiresAt: userData.tokenExpiresAt,
+            division: userData.division || '',
+            status: userData.status || '',
+            classification: userData.classification || ''
+          };
+          setSession(session);
+          // Show disclaimer before restoring full UI
+          showDisclaimer(() => {
+            restoreSessionUI();
+            fetchAndBuildNav(session.username);
+            loadHomepage();
+            startInactivityMonitoring();
+            logUserAction('SESSION_RESTORE', 'Persistent session restored', '');
+          });
+          return true;
+        } else {
+          storePersistentToken(null, null);
+          return false;
+        }
+      } catch (err) {
+        storePersistentToken(null, null);
+        return false;
+      }
+    }
+
+    // Disclaimer modal
+    const disclaimerModal = document.getElementById('disclaimerModal');
+    const disclaimerCard = document.getElementById('disclaimerCard');
+    const acknowledgeBtn = document.getElementById('acknowledgeBtn');
+    let pendingAfterDisclaimer = null;
+
+    function showDisclaimer(callback) {
+      if (!disclaimerModal) return;
+      pendingAfterDisclaimer = callback;
+      disclaimerModal.classList.add('show');
+      disclaimerModal.setAttribute('aria-hidden', 'false');
+      setTimeout(() => disclaimerCard.classList.add('open'), 14);
+    }
+
+    function closeDisclaimer(acknowledged) {
+      disclaimerCard.classList.remove('open');
+      disclaimerModal.setAttribute('aria-hidden', 'true');
+      setTimeout(() => {
+        disclaimerModal.classList.remove('show');
+        if (acknowledged && pendingAfterDisclaimer) {
+          const cb = pendingAfterDisclaimer;
+          pendingAfterDisclaimer = null;
+          cb();
+        }
+      }, 220);
+    }
+
+    acknowledgeBtn.addEventListener('click', () => closeDisclaimer(true));
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && disclaimerModal.classList.contains('show')) {
+        closeDisclaimer(false);
+      }
+    });
+
+    /***********************
+     * Helper functions
+     ***********************/
+    function getOriginFromUrl(url) {
+      try { return (new URL(url)).origin; } catch (e) { return null; }
+    }
+
+    function safePostMessage(targetWindow, targetOrigin, payload) {
+      try {
+        targetWindow.postMessage(payload, targetOrigin || '*');
+      } catch (e) { console.warn('postMessage failed', e, payload); }
+    }
+
+    function sendSessionToFrame(targetWindow, targetOrigin) {
+      var s = getSession();
+      var payload = { type: 'PIAO_IMS_SESSION', session: null };
+      if (s && s.username) {
+        payload.session = {
+          username: s.username,
+          fullname: s.fullname || '',
+          role: s.role || '',
+          loggedAt: s.loggedAt || Date.now(),
+          token: s.token || null,
+          tokenExpiresAt: s.tokenExpiresAt || null,
+          division: s.division || '',
+          status: s.status || '',
+          classification: s.classification || ''
+        };
+      }
+      safePostMessage(targetWindow, targetOrigin, payload);
+    }
+
+    window.addEventListener('message', async function(event) {
+      try {
+        if (!currentApp) return;
+        if (!frame || !frame.contentWindow) return;
+        if (event.source !== frame.contentWindow) return;
+        var originAllowed = getOriginFromUrl(currentApp.url);
+        if (originAllowed && event.origin !== originAllowed) {
+          console.warn('Message origin mismatch; expected:', originAllowed, 'got:', event.origin);
+          return;
+        }
+        var data = event.data || {};
+        if (!data.type) return;
+        if (data.type === 'REQUEST_SESSION') {
+          sendSessionToFrame(event.source, event.origin);
+          return;
+        }
+        if (data.type === 'VERIFY_TOKEN_REQUEST') {
+          var tokenToVerify = (data.token || '').toString();
+          var reqId = data.requestId || null;
+          try {
+            const res = await callApi('verifyToken', { token: tokenToVerify });
+            safePostMessage(event.source, event.origin, { type: 'VERIFY_TOKEN_RESPONSE', requestId: reqId, result: res });
+          } catch (err) {
+            safePostMessage(event.source, event.origin, { type: 'VERIFY_TOKEN_RESPONSE', requestId: reqId, error: 'Server error' });
+          }
+          return;
+        }
+        if (data.type === 'CREATE_APP_TOKEN') {
+          var webappId = data.webappId || currentApp.webappId || null;
+          var lifetime = parseInt(data.lifetimeMinutes, 10) || 15;
+          var reqId2 = data.requestId || null;
+          var s = getSession();
+          if (!s || !s.username) {
+            safePostMessage(event.source, event.origin, { type: 'CREATE_APP_TOKEN_RESPONSE', requestId: reqId2, success: false, message: 'No session' });
+            return;
+          }
+          try {
+            const tokenRes = await callApi('createLoginToken', {
+              userid: s.username,
+              fullname: s.fullname || s.username,
+              role: s.role || '',
+              lifetimeMinutes: lifetime,
+              webappId: webappId,
+              clientId: '',
+              browserInfo: ''
+            });
+            safePostMessage(event.source, event.origin, { type: 'CREATE_APP_TOKEN_RESPONSE', requestId: reqId2, result: tokenRes });
+          } catch (err) {
+            safePostMessage(event.source, event.origin, { type: 'CREATE_APP_TOKEN_RESPONSE', requestId: reqId2, success: false, message: 'Server error creating token' });
+          }
+          return;
+        }
+      } catch (e) { console.error('message handler error', e); }
+    }, false);
+
+    /***********************
+     * Sidebar & nav handlers
+     ***********************/
+    toggle.addEventListener('click', () => {
+      sidebar.classList.toggle('collapsed');
+      toggle.innerHTML = sidebar.classList.contains('collapsed')
+        ? '<i class="fa-solid fa-angles-right"></i>' : '<i class="fa-solid fa-angles-left"></i>';
+    });
+
+    function openMobileMenu(){ sidebar.classList.remove('mobile-hidden'); scrim.classList.add('show'); }
+    function closeMobileMenu(){ sidebar.classList.add('mobile-hidden'); scrim.classList.remove('show'); }
+    menuBtn.addEventListener('click', openMobileMenu);
+    scrim.addEventListener('click', closeMobileMenu);
+
+    function showLoader(){ loader.style.display='grid'; pill.textContent='Loading…'; frame.style.visibility='hidden'; }
+    function hideLoader(){ loader.style.display='none'; frame.style.visibility='visible'; pill.textContent='Ready'; }
+
+    function loadApp(url, title, webappId){
+      if (!url) return;
+      showLoader();
+      currentApp = { url: url, title: title || 'App', webappId: webappId || '' };
+      frame.src = url;
+      titleEl.textContent = title || 'Dashboard';
+      try { localStorage.setItem('lastApp', JSON.stringify({url, title, webappId})); } catch(e){}
+      frame.onload = () => {
+        hideLoader();
+        var origin = getOriginFromUrl(url) || '*';
+        sendSessionToFrame(frame.contentWindow, origin);
+        resetInactivityTimer();
+        logUserAction('APP_VISIT', title || webappId || 'Unknown App', `Loaded app: ${url}`);
+      };
+    }
+
+    function appendQueryParamToUrl(url, key, value){
+      if (!value) return url;
+      try {
+        var hash = '';
+        var base = url;
+        var idx = url.indexOf('#');
+        if (idx !== -1) {
+          hash = url.substring(idx);
+          base = url.substring(0, idx);
+        }
+        var sep = base.indexOf('?') === -1 ? '?' : '&';
+        return base + sep + encodeURIComponent(key) + '=' + encodeURIComponent(value) + hash;
+      } catch (e) { return url; }
+    }
+
+    nav.addEventListener('click', async (e) => {
+      const btn = e.target.closest('button[data-url]');
+      if(!btn) return;
+      const requiredRole = btn.getAttribute('data-role') || 'all';
+      const session = getSession();
+      if (requiredRole === 'admin' && (!session || session.role !== 'Administrator')) {
+        pill.textContent = 'Access denied'; setTimeout(()=> pill.textContent = 'Ready', 1400); return;
+      }
+      setActive(btn);
+      const url = btn.getAttribute('data-url');
+      const title = btn.getAttribute('data-title') || btn.textContent.trim();
+      const webappId = btn.getAttribute('data-webappid') || '';
+      const s = getSession();
+      if (s && s.username) {
+        showLoader();
+        try {
+          const tokenRes = await callApi('createLoginToken', {
+            userid: s.username,
+            fullname: s.fullname || s.username,
+            role: s.role || '',
+            lifetimeMinutes: 15,
+            webappId: webappId,
+            clientId: '',
+            browserInfo: ''
+          });
+          var finalUrl = url;
+          if (tokenRes && tokenRes.success && tokenRes.token) {
+            finalUrl = appendQueryParamToUrl(url, 'token', tokenRes.token);
+          } else if (s.token) {
+            finalUrl = appendQueryParamToUrl(url, 'token', s.token);
+          }
+          loadApp(finalUrl, title, webappId);
+          closeMobileMenu();
+        } catch (err) {
+          console.warn('createLoginToken failed', err);
+          var finalUrl = url;
+          if (s && s.token) finalUrl = appendQueryParamToUrl(url, 'token', s.token);
+          loadApp(finalUrl, title, webappId);
+          closeMobileMenu();
+        }
+      } else {
+        showLoader();
+        loadApp(url, title, webappId);
+        closeMobileMenu();
+      }
+    });
+
+    function setActive(btn){ [...nav.querySelectorAll('button')].forEach(b => b.classList.remove('active')); if(btn) btn.classList.add('active'); }
+
+    /***********************
+     * Load Homepage
+     ***********************/
+    function loadHomepage() {
+      let homeBtn = [...nav.querySelectorAll('button[data-url]')].find(btn => btn.getAttribute('data-title') === HOMEPAGE_TITLE);
+      if (!homeBtn) {
+        console.warn('Homepage button not found, using fallback URL');
+        const url = HOMEPAGE_URL;
+        const title = HOMEPAGE_TITLE;
+        const webappId = '';
+        const s = getSession();
+        if (s && s.username) {
+          showLoader();
+          callApi('createLoginToken', {
+            userid: s.username,
+            fullname: s.fullname || s.username,
+            role: s.role || '',
+            lifetimeMinutes: 15,
+            webappId: webappId,
+            clientId: '',
+            browserInfo: ''
+          }).then(tokenRes => {
+            var finalUrl = url;
+            if (tokenRes && tokenRes.success && tokenRes.token) {
+              finalUrl = appendQueryParamToUrl(url, 'token', tokenRes.token);
+            } else if (s.token) {
+              finalUrl = appendQueryParamToUrl(url, 'token', s.token);
+            }
+            loadApp(finalUrl, title, webappId);
+          }).catch(() => {
+            var finalUrl = url;
+            if (s && s.token) finalUrl = appendQueryParamToUrl(url, 'token', s.token);
+            loadApp(finalUrl, title, webappId);
+          });
+        } else {
+          showLoader();
+          loadApp(url, title, webappId);
+        }
+        return;
+      }
+      homeBtn.click();
+    }
+
+    /***********************
+     * Login modal & Recovery Mode
+     ***********************/
+    function openLogin(){
+      showLoginMode();
+      loginError.textContent = '';
+      loginUser.value = '';
+      loginPass.value = '';
+      rememberMeCheckbox.checked = false;
+      loginModal.classList.add('show');
+      loginModal.setAttribute('aria-hidden','false');
+      setTimeout(()=> loginCard.classList.add('open'), 14);
+      setTimeout(()=> loginUser.focus(), 220);
+    }
+
+    function closeLogin(){
+      loginCard.classList.remove('open');
+      loginModal.setAttribute('aria-hidden','true');
+      setTimeout(()=> loginModal.classList.remove('show'), 220);
+      resetRecoveryState();
+    }
+
+    function showLoginMode() {
+      loginModeContainer.style.display = 'block';
+      recoveryModeContainer.style.display = 'none';
+      resetRecoveryState();
+    }
+
+    function showRecoveryMode() {
+      loginModeContainer.style.display = 'none';
+      recoveryModeContainer.style.display = 'block';
+      resetRecoveryState();
+      recoveryStep1.style.display = 'block';
+      recoveryStep2.style.display = 'none';
+      recoveryStep3.style.display = 'none';
+      recoveryUserId.value = '';
+      recoveryStep1Error.textContent = '';
+      setTimeout(() => recoveryUserId.focus(), 100);
+    }
+
+    function resetRecoveryState() {
+      recoveryState = { userId: null, fullEmail: null };
+      recoveryStep1Error.textContent = '';
+      recoveryStep2Error.textContent = '';
+      recoveryStep2Success.textContent = '';
+      recoveryStep3Error.textContent = '';
+      recoveryStep3Success.textContent = '';
+      recoveryCode.value = '';
+    }
+
+    forgotPasswordLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      showRecoveryMode();
+    });
+
+    recoveryBackToLogin.addEventListener('click', () => { showLoginMode(); });
+    recoveryCancelStep2.addEventListener('click', () => { showLoginMode(); });
+    recoveryCancelStep3.addEventListener('click', () => { showLoginMode(); });
+
+    recoveryConfirmUserId.addEventListener('click', async () => {
+      const userId = recoveryUserId.value.trim();
+      if (!userId) { recoveryStep1Error.textContent = 'Please enter your User ID.'; return; }
+      recoveryConfirmUserId.disabled = true;
+      recoveryConfirmUserId.textContent = 'Verifying...';
+      try {
+        const result = await callApi('confirmUserIdForRecovery', { userId: userId });
+        recoveryConfirmUserId.disabled = false;
+        recoveryConfirmUserId.textContent = 'Verify User ID';
+        if (result.success) {
+          recoveryState.userId = userId;
+          recoveryState.fullEmail = result.fullEmail;
+          maskedEmailDisplay.textContent = result.maskedEmail;
+          recoveryStep1.style.display = 'none';
+          recoveryStep2.style.display = 'block';
+          recoveryStep2Error.textContent = '';
+          recoveryStep2Success.textContent = '';
+        } else {
+          recoveryStep1Error.textContent = result.message || 'User ID not found or account inactive.';
+        }
+      } catch (err) {
+        recoveryConfirmUserId.disabled = false;
+        recoveryConfirmUserId.textContent = 'Verify User ID';
+        recoveryStep1Error.textContent = 'Server error. Please try again.';
+        console.error(err);
+      }
+    });
+
+    recoverySendCode.addEventListener('click', async () => {
+      if (!recoveryState.userId || !recoveryState.fullEmail) {
+        recoveryStep2Error.textContent = 'Session expired. Please start over.';
+        setTimeout(() => showRecoveryMode(), 1500);
+        return;
+      }
+      recoverySendCode.disabled = true;
+      recoverySendCode.textContent = 'Sending...';
+      try {
+        const result = await callApi('sendRecoveryCode', { userId: recoveryState.userId, email: recoveryState.fullEmail });
+        recoverySendCode.disabled = false;
+        recoverySendCode.textContent = 'Send Recovery Code';
+        if (result.success) {
+          recoveryStep2Success.textContent = 'Recovery code sent to your email. Please check your inbox.';
+          recoveryStep2Error.textContent = '';
+          recoveryStep2.style.display = 'none';
+          recoveryStep3.style.display = 'block';
+          setTimeout(() => recoveryCode.focus(), 300);
+        } else {
+          recoveryStep2Error.textContent = result.message || 'Failed to send recovery code.';
+        }
+      } catch (err) {
+        recoverySendCode.disabled = false;
+        recoverySendCode.textContent = 'Send Recovery Code';
+        recoveryStep2Error.textContent = 'Server error. Please try again.';
+        console.error(err);
+      }
+    });
+
+    recoveryVerifyCode.addEventListener('click', async () => {
+      const code = recoveryCode.value.trim();
+      if (!code || code.length !== 6) {
+        recoveryStep3Error.textContent = 'Please enter the 6-digit verification code.';
+        return;
+      }
+      if (!recoveryState.userId) {
+        recoveryStep3Error.textContent = 'Session expired. Please start over.';
+        setTimeout(() => showRecoveryMode(), 1500);
+        return;
+      }
+      recoveryVerifyCode.disabled = true;
+      recoveryVerifyCode.textContent = 'Verifying...';
+      try {
+        const result = await callApi('verifyRecoveryCodeAndReset', { userId: recoveryState.userId, code: code });
+        recoveryVerifyCode.disabled = false;
+        recoveryVerifyCode.textContent = 'Verify & Reset Password';
+        if (result.success) {
+          recoveryStep3Success.textContent = result.message;
+          recoveryStep3Error.textContent = '';
+          setTimeout(() => {
+            showLoginMode();
+            loginUser.value = recoveryState.userId;
+            loginError.textContent = '';
+            const tempMsg = document.createElement('div');
+            tempMsg.style.color = '#16a34a';
+            tempMsg.style.fontSize = '13px';
+            tempMsg.style.marginBottom = '10px';
+            tempMsg.style.textAlign = 'center';
+            tempMsg.innerHTML = '<i class="fa-solid fa-check-circle"></i> Password reset successful! Please log in with default password.';
+            const loginStack = document.querySelector('#loginModeContainer .input-stack');
+            loginStack.parentNode.insertBefore(tempMsg, loginStack.nextSibling);
+            setTimeout(() => tempMsg.remove(), 5000);
+          }, 2000);
+        } else {
+          recoveryStep3Error.textContent = result.message || 'Invalid verification code.';
+        }
+      } catch (err) {
+        recoveryVerifyCode.disabled = false;
+        recoveryVerifyCode.textContent = 'Verify & Reset Password';
+        recoveryStep3Error.textContent = 'Server error. Please try again.';
+        console.error(err);
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        if (loginModal.classList.contains('show')) closeLogin();
+        if (changePassModal.classList.contains('show')) closeChangePass();
+      }
+    });
+
+    loginX.addEventListener('click', closeLogin);
+    togglePass.addEventListener('click', () => {
+      if (loginPass.type === 'password') {
+        loginPass.type = 'text';
+        togglePass.innerHTML = '<i class="fa-solid fa-eye-slash"></i>';
+      } else {
+        loginPass.type = 'password';
+        togglePass.innerHTML = '<i class="fa-solid fa-eye"></i>';
+      }
+      loginPass.focus();
+    });
+
+    /***********************
+     * Change Password modal
+     ***********************/
+    function openChangePass(payload) {
+      pendingForceUser = (payload && payload.username) ? payload.username : null;
+      pendingLoginPayload = payload || null;
+      changePassError.textContent = '';
+      chgUserLabel.textContent = payload && payload.username ? payload.username : '';
+      chgUserFullName.textContent = payload && payload.fullname ? payload.fullname : '';
+      let attrsHtml = '';
+      if (payload && payload.division) attrsHtml += `<div>DIVISION: <strong>${payload.division}</strong></div>`;
+      if (payload && payload.status) attrsHtml += `<div>STATUS: <strong>${payload.status}</strong></div>`;
+      if (payload && payload.classification) attrsHtml += `<div>CLASSIFICATION: <strong>${payload.classification}</strong></div>`;
+      chgUserAttributes.innerHTML = attrsHtml;
+      newPass.value = ''; confirmPass.value = '';
+      changePassModal.classList.add('show');
+      changePassModal.setAttribute('aria-hidden','false');
+      setTimeout(()=> changePassCard.classList.add('open'), 12);
+      setTimeout(()=> newPass.focus(), 200);
+    }
+    function closeChangePass(){
+      changePassCard.classList.remove('open');
+      changePassModal.setAttribute('aria-hidden','true');
+      setTimeout(()=> changePassModal.classList.remove('show'), 220);
+      pendingForceUser = null; pendingLoginPayload = null;
+      toggleNewPass.innerHTML = '<i class="fa-solid fa-eye"></i>';
+      toggleConfirmPass.innerHTML = '<i class="fa-solid fa-eye"></i>';
+      newPass.type = 'password'; confirmPass.type = 'password';
+    }
+    changePassCancel.addEventListener('click', function(){ closeChangePass(); setTimeout(()=> openLogin(), 120); });
+    toggleNewPass.addEventListener('click', function(){
+      if (newPass.type === 'password') { newPass.type = 'text'; toggleNewPass.innerHTML = '<i class="fa-solid fa-eye-slash"></i>'; }
+      else { newPass.type = 'password'; toggleNewPass.innerHTML = '<i class="fa-solid fa-eye"></i>'; }
+      newPass.focus();
+    });
+    toggleConfirmPass.addEventListener('click', function(){
+      if (confirmPass.type === 'password') { confirmPass.type = 'text'; toggleConfirmPass.innerHTML = '<i class="fa-solid fa-eye-slash"></i>'; }
+      else { confirmPass.type = 'password'; toggleConfirmPass.innerHTML = '<i class="fa-solid fa-eye"></i>'; }
+      confirmPass.focus();
+    });
+    changePassSubmit.addEventListener('click', function(){ doChangePassword(); });
+    newPass.addEventListener('keydown', (e) => { if (e.key === 'Enter') doChangePassword(); });
+    confirmPass.addEventListener('keydown', (e) => { if (e.key === 'Enter') doChangePassword(); });
+
+    async function doChangePassword(){
+      changePassError.textContent = '';
+      var np = newPass.value || '';
+      var cp = confirmPass.value || '';
+      if (np.length < 8) { changePassError.textContent = 'Password must be at least 8 characters.'; return; }
+      if (np !== cp) { changePassError.textContent = 'Passwords do not match.'; return; }
+      if (!pendingForceUser) { changePassError.textContent = 'Unknown user. Please sign in again.'; return; }
+      changePassSubmit.disabled = true; changePassSubmit.textContent = 'Saving…';
+      try {
+        const res = await callApi('changePassword', { username: pendingForceUser, newPassword: np, forceChange: false });
+        changePassSubmit.disabled = false; changePassSubmit.textContent = 'Save & Continue';
+        if (res && res.success) {
+          var payload = pendingLoginPayload || { username: pendingForceUser, role: 'User', fullname: pendingForceUser };
+          try {
+            const tokenRes = await callApi('createLoginToken', {
+              userid: payload.username,
+              fullname: payload.fullname,
+              role: payload.role,
+              lifetimeMinutes: 60,
+              webappId: '',
+              clientId: '',
+              browserInfo: ''
+            });
+            var sessionObj = { 
+              username: payload.username, 
+              role: payload.role, 
+              fullname: payload.fullname, 
+              loggedAt: Date.now(), 
+              token: tokenRes.success ? tokenRes.token : null, 
+              tokenExpiresAt: tokenRes.success ? tokenRes.expiresAt : null,
+              division: payload.division || '',
+              status: payload.status || '',
+              classification: payload.classification || ''
+            };
+            setSession(sessionObj);
+            closeChangePass();
+            restoreSessionUI();
+            pill.textContent = 'Password changed — signed in';
+            setTimeout(()=> pill.textContent = 'Ready', 1200);
+            fetchAndBuildNav(sessionObj.username);
+            loadHomepage();
+            startInactivityMonitoring();
+            logUserAction('PASSWORD_CHANGED', '', 'User changed password after force prompt');
+          } catch (err) {
+            var sessionObj = { 
+              username: payload.username, 
+              role: payload.role, 
+              fullname: payload.fullname, 
+              loggedAt: Date.now(),
+              division: payload.division || '',
+              status: payload.status || '',
+              classification: payload.classification || ''
+            };
+            setSession(sessionObj);
+            closeChangePass();
+            restoreSessionUI();
+            pill.textContent = 'Password changed — signed in';
+            setTimeout(()=> pill.textContent = 'Ready', 1200);
+            fetchAndBuildNav(sessionObj.username);
+            loadHomepage();
+            startInactivityMonitoring();
+            logUserAction('PASSWORD_CHANGED', '', 'User changed password after force prompt');
+          }
+        } else {
+          changePassError.textContent = res && res.message ? res.message : 'Failed to update password.';
+        }
+      } catch (err) {
+        changePassSubmit.disabled = false; changePassSubmit.textContent = 'Save & Continue';
+        console.error('changePassword failed', err);
+        changePassError.textContent = 'Server error. Check executions.';
+      }
+    }
+
+    /***********************
+     * Session helpers & UI restore
+     ***********************/
+    function setSession(session){ try{ sessionStorage.setItem('dashboardSession', JSON.stringify(session)); }catch(e){} }
+    function getSession(){
+      try{
+        var s = sessionStorage.getItem('dashboardSession');
+        if (!s) {
+          var legacy = localStorage.getItem('dashboardSession');
+          if (legacy) { sessionStorage.setItem('dashboardSession', legacy); localStorage.removeItem('dashboardSession'); s = legacy; }
+        }
+        return s ? JSON.parse(s) : null;
+      }catch(e){ return null; }
+    }
+    function clearSession(){ 
+      try{ 
+        sessionStorage.removeItem('dashboardSession'); 
+        localStorage.removeItem('dashboardSession');
+        storePersistentToken(null, null);
+      }catch(e){} 
+    }
+
+    function restoreSessionUI(){
+      const s = getSession();
+      if (s && s.username) {
+        loginBtn.style.display = 'none';
+        userContainer.style.display = 'flex';
+        userNameShort.textContent = s.fullname || s.username;
+        userFullName.textContent = (s.fullname ? s.fullname + ' (' + s.username + ')' : s.username);
+        let attrsHtml = '';
+        if (s.division) attrsHtml += `<div>DIVISION: ${s.division}</div>`;
+        if (s.status) attrsHtml += `<div>STATUS: ${s.status}</div>`;
+        if (s.classification) attrsHtml += `<div>CLASSIFICATION: ${s.classification}</div>`;
+        userAttributes.innerHTML = attrsHtml;
+        logoutIcon.style.display = '';
+        fetchAndBuildNav(s.username);
+        startInactivityMonitoring();
+      } else {
+        loginBtn.style.display = 'inline-flex';
+        userContainer.style.display = 'none';
+        logoutIcon.style.display = 'none';
+        clearNavAndShowPlaceholder();
+        stopInactivityMonitoring();
+      }
+    }
+
+    /***********************
+     * Nav building (unchanged – includes configurable Homepage)
+     ***********************/
+    function clearNavAndShowPlaceholder(){
+      nav.innerHTML = '';
+      var li = document.createElement('li');
+      var btn = document.createElement('button');
+      btn.setAttribute('data-url', HOMEPAGE_URL);
+      btn.setAttribute('data-title', HOMEPAGE_TITLE);
+      btn.className = 'main-btn';
+      btn.innerHTML = '<span style="display:inline-flex;align-items:center;gap:10px"><i class="fa-solid fa-house"></i><span class="label">Homepage</span></span><span class="dot"></span>';
+      li.appendChild(btn);
+      nav.appendChild(li);
+    }
+
+    function buildNavFromServer(res, orderRes) {
+      try {
+        if (!res || !res.success || !res.nav || Object.keys(res.nav).length === 0) {
+          clearNavAndShowPlaceholder();
+          return;
+        }
+        var navData = res.nav;
+        var navOrder = res.order || {};
+        var categoryOrder = [];
+        if (orderRes && orderRes.success && orderRes.order && orderRes.order.categories) {
+          categoryOrder = orderRes.order.categories.filter(function(cat) { return navData[cat]; });
+        } else if (navOrder.categories && navOrder.categories.length > 0) {
+          categoryOrder = navOrder.categories;
+        } else {
+          categoryOrder = Object.keys(navData).sort();
+        }
+        nav.innerHTML = '';
+        var homeLi = document.createElement('li');
+        var homeBtn = document.createElement('button');
+        homeBtn.setAttribute('data-url', HOMEPAGE_URL);
+        homeBtn.setAttribute('data-title', HOMEPAGE_TITLE);
+        homeBtn.className = 'main-btn';
+        homeBtn.innerHTML = '<span style="display:inline-flex;align-items:center;gap:10px"><i class="fa-solid fa-house"></i><span class="label">Homepage</span></span>';
+        homeLi.appendChild(homeBtn);
+        nav.appendChild(homeLi);
+        categoryOrder.forEach(function(category) {
+          var categoryData = navData[category];
+          if (!categoryData) return;
+          var li = document.createElement('li');
+          var mainBtn = document.createElement('button');
+          mainBtn.className = 'main-btn';
+          mainBtn.setAttribute('data-category', category);
+          mainBtn.innerHTML = '<span style="display:inline-flex;align-items:center;gap:10px"><i class="fa-solid fa-folder"></i><span class="label">' + category + '</span></span><i class="fa-solid fa-chevron-right caret"></i>';
+          li.appendChild(mainBtn);
+          var classificationOrder = [];
+          if (orderRes && orderRes.success && orderRes.order && orderRes.order.structure && orderRes.order.structure[category]) {
+            var orderedClassifications = Object.keys(orderRes.order.structure[category]);
+            classificationOrder = orderedClassifications.filter(function(cls) { return categoryData[cls]; });
+          } else if (navOrder.classifications && navOrder.classifications[category]) {
+            classificationOrder = navOrder.classifications[category];
+          } else {
+            classificationOrder = Object.keys(categoryData).sort();
+          }
+          var subUl = document.createElement('ul');
+          subUl.className = 'subnav';
+          classificationOrder.forEach(function(classification) {
+            var classificationData = categoryData[classification];
+            if (!classificationData || !Array.isArray(classificationData)) return;
+            var subLi = document.createElement('li');
+            var clsBtn = document.createElement('button');
+            clsBtn.className = 'cls-btn';
+            clsBtn.setAttribute('data-category', category);
+            clsBtn.setAttribute('data-classification', classification);
+            clsBtn.innerHTML = '<span style="display:inline-flex;align-items:center;gap:10px"><i class="fa-solid fa-folder-open"></i><span class="label">' + classification + '</span></span><i class="fa-solid fa-chevron-right subcaret"></i>';
+            subLi.appendChild(clsBtn);
+            var subSubUl = document.createElement('ul');
+            subSubUl.className = 'subsubnav';
+            var specificOrder = classificationData.map(function(app) { return app.title; });
+            if (orderRes && orderRes.success && orderRes.order && orderRes.order.structure && 
+                orderRes.order.structure[category] && orderRes.order.structure[category][classification]) {
+              specificOrder = orderRes.order.structure[category][classification].filter(function(specific) {
+                return classificationData.some(function(app) { return app.title === specific; });
+              });
+            }
+            var sortedApps = [];
+            specificOrder.forEach(function(specific) {
+              var app = classificationData.find(function(a) { return a.title === specific; });
+              if (app) sortedApps.push(app);
+            });
+            classificationData.forEach(function(app) {
+              if (!sortedApps.some(function(a) { return a.title === app.title; })) {
+                sortedApps.push(app);
+              }
+            });
+            sortedApps.forEach(function(app) {
+              var appLi = document.createElement('li');
+              var appBtn = document.createElement('button');
+              appBtn.setAttribute('data-url', app.url || '');
+              appBtn.setAttribute('data-title', app.title || 'App');
+              appBtn.setAttribute('data-webappid', app.webappId || '');
+              appBtn.className = 'app-btn';
+              appBtn.innerHTML = '<span class="label">' + (app.title || 'App') + '</span>';
+              appLi.appendChild(appBtn);
+              subSubUl.appendChild(appLi);
+            });
+            subLi.appendChild(subSubUl);
+            subUl.appendChild(subLi);
+          });
+          li.appendChild(subUl);
+          nav.appendChild(li);
+          // Event handlers
+          mainBtn.addEventListener('click', function() {
+            var open = subUl.classList.toggle('show');
+            var caret = mainBtn.querySelector('.caret');
+            if (caret) caret.classList.toggle('open', open);
+            mainBtn.classList.toggle('active', open);
+            var allSubnavs = nav.querySelectorAll('.subnav');
+            var allCarets = nav.querySelectorAll('.main-btn .caret');
+            var allMainBtns = nav.querySelectorAll('.main-btn');
+            allSubnavs.forEach(function(sn) { if (sn !== subUl) sn.classList.remove('show'); });
+            allCarets.forEach(function(c) { if (c !== caret) c.classList.remove('open'); });
+            allMainBtns.forEach(function(btn) { if (btn !== mainBtn) btn.classList.remove('active'); });
+          });
+          subUl.addEventListener('click', function(e) {
+            var clsBtn = e.target.closest('.cls-btn');
+            if (!clsBtn) return;
+            var subSubUl = clsBtn.nextElementSibling;
+            if (!subSubUl || !subSubUl.classList.contains('subsubnav')) return;
+            e.stopPropagation();
+            var open = subSubUl.classList.toggle('show');
+            var subcaret = clsBtn.querySelector('.subcaret');
+            if (subcaret) subcaret.classList.toggle('open', open);
+            clsBtn.classList.toggle('active', open);
+            var otherSubSubs = subUl.querySelectorAll('.subsubnav');
+            var otherSubCarets = subUl.querySelectorAll('.cls-btn .subcaret');
+            var otherClsBtns = subUl.querySelectorAll('.cls-btn');
+            otherSubSubs.forEach(function(ssu) { if (ssu !== subSubUl) ssu.classList.remove('show'); });
+            otherSubCarets.forEach(function(sc) { if (sc !== subcaret) sc.classList.remove('open'); });
+            otherClsBtns.forEach(function(cb) { if (cb !== clsBtn) cb.classList.remove('active'); });
+          });
+          subUl.addEventListener('click', function(e) {
+            var appBtn = e.target.closest('.app-btn');
+            if (!appBtn) return;
+            e.stopPropagation();
+            var allAppBtns = nav.querySelectorAll('.app-btn');
+            allAppBtns.forEach(function(b){ b.classList.remove('active'); });
+            appBtn.classList.add('active');
+            var clsBtn = appBtn.closest('li').querySelector('.cls-btn');
+            var mainBtn = appBtn.closest('li').closest('li').querySelector('.main-btn');
+            if (clsBtn) {
+              var allClsBtns = nav.querySelectorAll('.cls-btn');
+              allClsBtns.forEach(function(cb){ cb.classList.remove('active'); });
+              clsBtn.classList.add('active');
+            }
+            if (mainBtn) {
+              var allMainBtns = nav.querySelectorAll('.main-btn');
+              allMainBtns.forEach(function(mb){ mb.classList.remove('active'); });
+              mainBtn.classList.add('active');
+            }
+            const url = appBtn.getAttribute('data-url');
+            const title = appBtn.getAttribute('data-title') || appBtn.textContent.trim();
+            const webappId = appBtn.getAttribute('data-webappid') || '';
+            const s = getSession();
+            if (s && s.username) {
+              showLoader();
+              callApi('createLoginToken', {
+                userid: s.username,
+                fullname: s.fullname || s.username,
+                role: s.role || '',
+                lifetimeMinutes: 15,
+                webappId: webappId,
+                clientId: '',
+                browserInfo: ''
+              }).then(tokenRes => {
+                var finalUrl = url;
+                if (tokenRes && tokenRes.success && tokenRes.token) {
+                  finalUrl = appendQueryParamToUrl(url, 'token', tokenRes.token);
+                } else if (s.token) {
+                  finalUrl = appendQueryParamToUrl(url, 'token', s.token);
+                }
+                loadApp(finalUrl, title, webappId);
+                closeMobileMenu();
+              }).catch(() => {
+                var finalUrl = url;
+                if (s && s.token) finalUrl = appendQueryParamToUrl(url, 'token', s.token);
+                loadApp(finalUrl, title, webappId);
+                closeMobileMenu();
+              });
+            } else {
+              showLoader();
+              loadApp(url, title, webappId);
+              closeMobileMenu();
+            }
+          });
+        });
+        if (!document.querySelector('style#nav3level')) {
+          var style = document.createElement('style');
+          style.id = 'nav3level';
+          style.textContent = `
+            .subsubnav { list-style: none; margin: 6px 4px 12px 6px; padding: 0; display: none; transition: all .18s ease; }
+            .subsubnav.show { display: block; }
+            .nav .subsubnav button { width: 100%; text-align: left; padding: 10px 18px 10px 28px; border-radius: 10px; font-size: 14px; background: transparent; border: 0; display: block; cursor: pointer; }
+            .nav .cls-btn { width: 100%; text-align: left; padding: 12px 14px; border-radius: 12px; background: transparent; border: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; cursor: pointer; color: rgba(255, 255, 255, 0.8); }
+            .nav .cls-btn:hover { background: var(--sidebar-hover); }
+            .nav .cls-btn.active { background: linear-gradient(90deg, rgba(212,160,23,0.10), rgba(212,160,23,0.04)); color: #ffbb00; }
+            .nav .subcaret { transition: transform .18s ease; font-size: 12px; }
+            .nav .subcaret.open { transform: rotate(90deg); }
+            .app-btn.active { background: linear-gradient(90deg, rgba(212,160,23,0.15), rgba(212,160,23,0.06)); color: #ffbb00; }
+          `;
+          document.head.appendChild(style);
+        }
+      } catch (e) {
+        console.error('buildNavFromServer error', e);
+        clearNavAndShowPlaceholder();
+      }
+    }
+
+    async function fetchAndBuildNav(username) {
+      if (!username) { clearNavAndShowPlaceholder(); return; }
+      try {
+        const res = await callApi('getNavForUser', { userid: username });
+        const orderRes = await callApi('getNavOrder', {});
+        buildNavFromServer(res, orderRes);
+      } catch (err) {
+        console.error('getNavForUser failed', err);
+        clearNavAndShowPlaceholder();
+      }
+    }
+
+    /***********************
+     * Login flow
+     ***********************/
+    loginBtn.addEventListener('click', openLogin);
+    loginCancel.addEventListener('click', closeLogin);
+    loginSubmit.addEventListener('click', attemptLogin);
+    loginPass.addEventListener('keydown', (e)=>{ if (e.key === 'Enter') attemptLogin(); });
+    loginUser.addEventListener('keydown', (e)=>{ if (e.key === 'Enter') loginPass.focus(); });
+
+    async function attemptLogin() {
+      loginError.textContent = '';
+      const u = loginUser.value.trim();
+      const p = loginPass.value;
+      if (!u || !p) {
+        loginError.textContent = 'Please enter userid and password.';
+        return;
+      }
+      loginSubmit.disabled = true;
+      loginSubmit.textContent = 'Checking…';
+      try {
+        const res = await callApi('login', { username: u, password: p });
+        loginSubmit.disabled = false;
+        loginSubmit.textContent = 'LOGIN';
+        if (res && res.success) {
+          if (res.forceChange) {
+            closeLogin();
+            openChangePass(res);
+            return;
+          }
+          var session = {
+            username: res.username,
+            role: res.role,
+            fullname: res.fullname,
+            loggedAt: Date.now(),
+            division: res.division || '',
+            status: res.status || '',
+            classification: res.classification || ''
+          };
+          if (res.token) {
+            session.token = res.token;
+            session.tokenExpiresAt = res.tokenExpiresAt;
+          }
+          setSession(session);
+
+          if (rememberMeCheckbox.checked && res.token) {
+            try {
+              const longTokenRes = await callApi('createLoginToken', {
+                userid: session.username,
+                fullname: session.fullname,
+                role: session.role,
+                lifetimeMinutes: 43200,
+                webappId: '',
+                clientId: '',
+                browserInfo: ''
+              });
+              if (longTokenRes && longTokenRes.success && longTokenRes.token) {
+                session.token = longTokenRes.token;
+                session.tokenExpiresAt = longTokenRes.expiresAt;
+                setSession(session);
+                storePersistentToken(longTokenRes.token, {
+                  username: session.username,
+                  role: session.role,
+                  fullname: session.fullname,
+                  tokenExpiresAt: session.tokenExpiresAt,
+                  division: session.division,
+                  status: session.status,
+                  classification: session.classification
+                });
+              } else {
+                storePersistentToken(null, null);
+              }
+            } catch (err) {
+              storePersistentToken(null, null);
+            }
+          } else {
+            storePersistentToken(null, null);
+          }
+
+          closeLogin();
+          showDisclaimer(() => {
+            restoreSessionUI();
+            pill.textContent = 'Signed in';
+            setTimeout(() => pill.textContent = 'Ready', 1200);
+            fetchAndBuildNav(session.username);
+            loadHomepage();
+            startInactivityMonitoring();
+            logUserAction('LOGIN_SUCCESS', '', 'User logged in successfully');
+          });
+        } else {
+          loginError.textContent = res && res.message ? res.message : 'Sign in failed.';
+        }
+      } catch (err) {
+        console.error('checkLogin failed', err);
+        loginSubmit.disabled = false;
+        loginSubmit.textContent = 'LOGIN';
+        loginError.textContent = 'Server error. Check deployment/executions.';
+        pill.textContent = 'Server error';
+        setTimeout(() => pill.textContent = 'Ready', 1500);
+      }
+    }
+
+    /***********************
+     * Logout
+     ***********************/
+    userPill.addEventListener('click', ()=> userMenu.classList.toggle('show'));
+    logoutBtn.addEventListener('click', () => doLogout(false));
+    logoutIcon.addEventListener('click', () => doLogout(false));
+
+    function doLogout(silent = false) {
+      stopInactivityMonitoring();
+      const s = getSession();
+      if (s && s.username) {
+        logUserAction('LOGOUT', '', 'User signed out');
+      }
+      if (s && s.token) {
+        callApi('deleteLoginToken', { token: s.token }).catch(() => {});
+      }
+      clearSession();
+      storePersistentToken(null, null);
+      restoreSessionUI();
+      userMenu.classList.remove('show');
+      if (!silent) pill.textContent = 'Signed out';
+      setTimeout(()=> { if (!silent) pill.textContent = 'Ready'; }, 1200);
+      frame.src = 'about:blank';
+      titleEl.textContent = 'Welcome';
+      setTimeout(()=> openLogin(), 260);
+    }
+
+    document.addEventListener('click', function(e){
+      if (!document.getElementById('userContainer') || !document.getElementById('userContainer').contains(e.target)) {
+        if (userMenu) userMenu.classList.remove('show');
+      }
+    });
+
+    function testServerConnectivity(){
+      callApi('ping')
+        .then(r => { if (r && r.ok) console.log('Server ping OK @', r.now); })
+        .catch(err => { console.error('Server ping failed', err); pill.textContent = 'Server unreachable'; setTimeout(()=> pill.textContent = 'Ready', 1600); });
+    }
+
+    /***********************
+     * Initialization
+     ***********************/
+    (async function init() {
+      if (!localStorage.getItem('clientId')) {
+        localStorage.setItem('clientId', 'client_' + Math.random().toString(36).substring(2, 15));
+      }
+      const restored = await restorePersistentSession();
+      if (!restored) {
+        restoreSessionUI();
+        const session = getSession();
+        if (session && session.username) {
+          loadHomepage();
+          startInactivityMonitoring();
+        } else {
+          frame.src = 'about:blank';
+          titleEl.textContent = 'Welcome';
+          pill.textContent = 'Please sign in';
+          setTimeout(()=> { if (!getSession()) pill.textContent = 'Ready'; }, 1200);
+          setTimeout(()=> openLogin(), 220);
+        }
+      }
+      testServerConnectivity();
+    })();
+  </script>
+</body>
+</html>
